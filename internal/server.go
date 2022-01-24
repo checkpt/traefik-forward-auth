@@ -184,6 +184,20 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 			http.Error(w, "Service unavailable", 503)
 			return
 		}
+		
+		var roleFound bool
+		for _, role := range user.Roles {
+			for _,configRole := range config.Roles {
+				if role == configRole {
+					roleFound = true
+					break
+				}
+			}
+		}
+
+		if !roleFound && len(config.Roles) > 0 {
+			http.Error(w, "User not authorized", 403)
+		}
 
 		// Generate cookie
 		http.SetCookie(w, MakeCookie(r, user.Email))

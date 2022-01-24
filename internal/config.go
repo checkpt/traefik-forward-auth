@@ -43,6 +43,7 @@ type Config struct {
 
 	Providers provider.Providers `group:"providers" namespace:"providers" env-namespace:"PROVIDERS"`
 	Rules     map[string]*Rule   `long:"rule.<name>.<param>" description:"Rule definitions, param can be: \"action\", \"rule\" or \"provider\""`
+	Roles     CommaSeparatedList `long:"roles" env:"ROLES" description:"Roles to be able to access resource. Default allows any roles"`
 
 	// Filled during transformations
 	Secret   []byte `json:"-"`
