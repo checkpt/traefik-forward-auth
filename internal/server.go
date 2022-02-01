@@ -208,7 +208,7 @@ func (s *Server) LogoutHandler() http.HandlerFunc {
 		logger.Info("Logged out user")
 
 		if config.LogoutRedirect != "" {
-			http.Redirect(w, r, config.LogoutRedirect, http.StatusTemporaryRedirect)
+			http.Redirect(w, r, config.LogoutRedirect + "https://" + r.Host, http.StatusTemporaryRedirect)
 		} else {
 			http.Error(w, "You have been logged out", 401)
 		}
