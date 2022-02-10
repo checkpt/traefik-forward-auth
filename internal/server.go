@@ -3,6 +3,7 @@ package tfa
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/containous/traefik/v2/pkg/rules"
 	"github.com/sirupsen/logrus"
@@ -83,7 +84,6 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Logging setup
 		logger := s.logger(r, "Auth", rule, "Authenticating request")
-
 		// Get auth cookie
 		c, err := r.Cookie(config.CookieName)
 		if err != nil {
@@ -236,6 +236,12 @@ func (s *Server) authRedirect(logger *logrus.Entry, w http.ResponseWriter, r *ht
 		logger.WithField("error", err).Error("Error generating nonce")
 		http.Error(w, "Service unavailable", 503)
 		return
+	}
+
+	for _, v := range r.Cookies() {
+		if strings.Contains(v.Name, config.CSRFCookieName) {
+			http.SetCookie(w, ClearCSRFCookie(r, v))
+		}
 	}
 
 	// Set the CSRF cookie
